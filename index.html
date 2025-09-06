@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Rojo Tradición y Oro Elegante -->
+    <!-- Application Structure Plan: Se ha diseñado una arquitectura de información que funciona como un embudo de marketing. Comienza con una sección de héroe (Hero) para captar la atención, seguida de "Nuestra Experiencia" que detalla la propuesta de valor única (tradición y elegancia). Luego, se presentan los casos de uso en "Perfecto Para Tus Eventos". A continuación, una sección de "Impacto y Credibilidad" con una gráfica de datos y estadísticas clave para generar confianza. Finalmente, las secciones interactivas (Galería y Generador de Ideas) fomentan la participación del usuario antes de llegar al llamado de acción final en el pie de página. Esta estructura guía al usuario de manera lógica desde el descubrimiento hasta la conversión. -->
+    <!-- Visualization & Content Choices: Para la sección de "Impacto", se eligió un gráfico de dona (Doughnut Chart) de Chart.js para visualizar la popularidad de los tipos de eventos de una manera simple y atractiva (Meta: Comparar). Se complementa con estadísticas dinámicas para informar y construir credibilidad (Meta: Informar). Para la sección de "Nuestra Experiencia", se utilizan tarjetas con íconos Unicode para organizar y presentar los elementos culturales y de elegancia (Meta: Organizar), evitando el uso de imágenes o SVG. La Galería de Instagram y el Generador de Ideas con Gemini se mantienen como elementos interactivos clave para la participación del usuario. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>D'Paila Helados - Experiencias de Helado Artesanal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-brand-red { background-color: #D43A2F; }
+        .bg-brand-gold { background-color: #FFC107; }
+        .text-brand-gold { color: #FFC107; }
+        .border-brand-gold { border-color: #FFC107; }
+        .ring-brand-gold { --tw-ring-color: #FFC107; }
+        .bg-brand-dark { background-color: #2C2C2C; }
+        .text-brand-dark { color: #2C2C2C; }
+        .bg-brand-light { background-color: #F9F9F9; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            min-height: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FFC107;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-white text-brand-dark">
+
+    <header class="bg-brand-red sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#inicio">
+                <img src="https://i.imgur.com/Q9gB2YS.png" alt="D'Paila Helados Logo" class="h-14 w-14 rounded-full">
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#experiencia" class="text-white font-bold tracking-wide hover:text-brand-gold transition-colors" data-translate="experience-nav">La Experiencia</a>
+                <a href="#eventos" class="text-white font-bold tracking-wide hover:text-brand-gold transition-colors" data-translate="events-nav">Eventos</a>
+                <a href="#impacto" class="text-white font-bold tracking-wide hover:text-brand-gold transition-colors" data-translate="impact-nav">Nuestro Impacto</a>
+                <a href="#galeria" class="text-white font-bold tracking-wide hover:text-brand-gold transition-colors" data-translate="gallery-nav">Galería</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button id="language-dropdown-btn" class="bg-brand-dark text-white font-bold py-2 px-3 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-opacity-90 transition-colors">
+                        <span id="current-lang">🇪🇸 ES</span>
+                        <svg class="w-4 h-4 text-white transition-transform duration-200 transform" id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="language-options" class="absolute top-full mt-2 right-0 w-max bg-white border border-gray-200 rounded-lg shadow-lg z-50 hidden overflow-hidden">
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="es">🇪🇸 Español</button>
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">🇺🇸 English</button>
+                    </div>
+                </div>
+                <a href="#contacto" class="hidden md:block bg-brand-dark text-white font-bold py-3 px-6 rounded-full hover:bg-opacity-90 transition-transform transform hover:scale-105" data-translate="quote-btn">
+                    Cotizar Evento
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="inicio" class="text-center py-24 px-6 bg-brand-light">
+            <div class="container mx-auto">
+                <h1 class="text-5xl md:text-7xl font-extrabold text-brand-dark leading-tight" data-translate="hero-title">
+                    Tradición y Sabor<br>en una <span class="text-brand-gold">Experiencia Inolvidable</span>
+                </h1>
+                <p class="mt-6 max-w-3xl mx-auto text-xl text-gray-600" data-translate="hero-subtitle">
+                    Transformamos tu celebración con el auténtico helado de paila ecuatoriano, preparado en vivo con un toque de elegancia y distinción.
+                </p>
+                <div class="mt-10 flex justify-center gap-4">
+                    <a href="#contacto" class="bg-brand-red text-white font-bold py-4 px-8 rounded-full text-lg hover:bg-opacity-90 transition-transform transform hover:scale-105 shadow-lg" data-translate="agenda-btn">
+                        Agenda Tu Experiencia
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="experiencia" class="py-20 px-6">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold text-brand-dark" data-translate="experience-title">Nuestra Experiencia Única</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600" data-translate="experience-subtitle">
+                    Fusionamos la rica cultura de Ecuador con un servicio de élite. Cada detalle está pensado para crear un momento memorable en tu evento.
+                </p>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <span class="text-5xl">👑</span>
+                        <h3 class="mt-4 text-2xl font-bold" data-translate="show-card-title">Show en Vivo</h3>
+                        <p class="mt-2 text-gray-600" data-translate="show-card-text">Elaboramos el helado de paila frente a tus invitados, un espectáculo artesanal que deleita todos los sentidos.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <span class="text-5xl">🇪🇨</span>
+                        <h3 class="mt-4 text-2xl font-bold" data-translate="cultural-card-title">Símbolos Culturales</h3>
+                        <p class="mt-2 text-gray-600" data-translate="cultural-card-text">Integramos elementos icónicos como sombreros de paja toquilla y muñecas otavaleñas para una inmersión cultural.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <span class="text-5xl">🤵</span>
+                        <h3 class="mt-4 text-2xl font-bold" data-translate="elegance-card-title">Toque de Elegancia</h3>
+                        <p class="mt-2 text-gray-600" data-translate="elegance-card-text">Nuestro equipo viste impecables camisas blancas y guantes negros, garantizando un servicio pulcro y sofisticado.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <span class="text-5xl">✨</span>
+                        <h3 class="mt-4 text-2xl font-bold" data-translate="premium-card-title">Calidad Premium</h3>
+                        <p class="mt-2 text-gray-600" data-translate="premium-card-text">Utilizamos solo ingredientes frescos y de la más alta calidad para un sabor que evoca la verdadera tradición ecuatoriana.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="eventos" class="bg-brand-light py-20 px-6">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold text-brand-dark" data-translate="events-title">Perfecto Para Tus Eventos</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600" data-translate="events-subtitle">
+                    Añade un factor sorpresa y un sabor inigualable a cualquier tipo de celebración.
+                </p>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1597158269227-203e07552de7?q=80&w=2070&auto=format&fit=crop" alt="Boda elegante" class="w-full h-64 object-cover">
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold" data-translate="weddings-card-title">Bodas y Aniversarios</h3>
+                            <p class="mt-2 text-gray-600" data-translate="weddings-card-text">Un detalle dulce y sofisticado que tus invitados recordarán para siempre.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop" alt="Evento corporativo" class="w-full h-64 object-cover">
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold" data-translate="corporate-card-title">Eventos Corporativos</h3>
+                            <p class="mt-2 text-gray-600" data-translate="corporate-card-text">Sorprende a clientes y colaboradores con una experiencia interactiva y deliciosa.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                         <img src="https://images.unsplash.com/photo-1616091216774-ff8736528766?q=80&w=2070&auto=format&fit=crop" alt="Fiesta privada" class="w-full h-64 object-cover">
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold" data-translate="private-card-title">Fiestas Privadas</h3>
+                            <p class="mt-2 text-gray-600" data-translate="private-card-text">Desde cumpleaños hasta reuniones al aire libre, llevamos la fiesta a otro nivel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impacto" class="py-20 px-6">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold text-brand-dark" data-translate="impact-title">Nuestro Impacto en Cifras</h2>
+                 <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600" data-translate="impact-subtitle">
+                    Creamos momentos felices y memorables. Los datos hablan por sí solos sobre la preferencia de nuestros clientes.
+                </p>
+                <div class="mt-16 flex flex-col lg:flex-row items-center justify-center gap-16">
+                    <div class="w-full lg:w-1/2">
+                        <div class="chart-container">
+                            <canvas id="eventsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-10 text-left">
+                        <div class="bg-brand-light p-6 rounded-2xl">
+                            <div class="text-5xl font-extrabold text-brand-red" data-translate="500+-number">500+</div>
+                            <div class="mt-2 text-xl font-bold" data-translate="500+-title">Eventos Realizados</div>
+                            <p class="text-gray-600" data-translate="500+-text">Llevando sonrisas y sabor a lo largo de Ecuador.</p>
+                        </div>
+                        <div class="bg-brand-light p-6 rounded-2xl">
+                             <div class="text-5xl font-extrabold text-brand-red" data-translate="98%-number">98%</div>
+                            <div class="mt-2 text-xl font-bold" data-translate="98%-title">Satisfacción</div>
+                            <p class="text-gray-600" data-translate="98%-text">Nuestros clientes nos recomiendan por nuestro sabor y servicio.</p>
+                        </div>
+                         <div class="bg-brand-light p-6 rounded-2xl">
+                            <div class="text-5xl font-extrabold text-brand-red" data-translate="20+-number">20+</div>
+                            <div class="mt-2 text-xl font-bold" data-translate="20+-title">Sabores Únicos</div>
+                            <p class="text-gray-600" data-translate="20+-text">Desde frutas tradicionales hasta creaciones exclusivas para tu evento.</p>
+                        </div>
+                         <div class="bg-brand-light p-6 rounded-2xl">
+                            <div class="text-5xl font-extrabold text-brand-red" data-translate="100%-number">100%</div>
+                            <div class="mt-2 text-xl font-bold" data-translate="100%-title">Artesanal</div>
+                            <p class="text-gray-600" data-translate="100%-text">Cada helado es una obra de arte, hecho con pasión y tradición.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="galeria" class="bg-brand-light py-20 px-6">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold text-brand-dark" data-translate="gallery-title">Galería de Momentos D'Paila</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600" data-translate="gallery-subtitle">
+                    Así se ven las sonrisas y la magia en nuestros eventos. Incrusta tus publicaciones favoritas de nuestro Instagram.
+                </p>
+                <div class="max-w-3xl mx-auto mt-10">
+                    <textarea id="instagramEmbedCode" placeholder="Pega aquí el código para incrustar de Instagram..." class="w-full h-28 p-4 rounded-xl border-2 border-brand-gold text-gray-800 focus:outline-none focus:ring-2 ring-brand-gold shadow-inner" data-translate="gallery-placeholder"></textarea>
+                    <button id="addPostBtn" class="mt-4 bg-brand-dark text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-opacity-90 transition-transform transform hover:scale-105" data-translate="add-post-btn">
+                        Añadir a la Galería
+                    </button>
+                </div>
+                <div id="instagramFeed" class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                </div>
+            </div>
+        </section>
+
+        <section id="ideas-gemini" class="py-20 px-6">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold text-brand-dark" data-translate="ideas-title">¿Necesitas Inspiración? ✨</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600" data-translate="ideas-subtitle">
+                    Describe tu evento y nuestra IA te dará una idea temática creativa para integrar la experiencia D'Paila Helados.
+                </p>
+                <div class="max-w-3xl mx-auto mt-10">
+                     <input type="text" id="eventTypeInput" placeholder="Ej: Boda campestre, Aniversario 50 años, Fiesta de verano..." class="w-full p-4 rounded-xl border-2 border-brand-gold text-gray-800 text-lg focus:outline-none focus:ring-2 ring-brand-gold shadow-inner" data-translate="ideas-placeholder">
+                    <button id="generateIdeaBtn" class="mt-4 bg-brand-dark text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-opacity-90 transition-transform transform hover:scale-105 shadow-lg" data-translate="generate-btn">
+                        Generar Idea Creativa
+                    </button>
+                </div>
+                <div id="loadingIndicator" class="mt-8 hidden"><div class="loader mx-auto"></div></div>
+                <div id="ideaResult" class="mt-8 max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-100 hidden">
+                    <h4 class="text-2xl font-bold text-brand-dark" data-translate="idea-result-title">Una Idea Para Ti:</h4>
+                    <p id="ideaText" class="mt-2 text-lg text-gray-600"></p>
+                </div>
+                <div id="errorResult" class="mt-8 max-w-3xl mx-auto bg-red-100 text-red-700 p-4 rounded-xl hidden" data-translate="error-message"></div>
+            </div>
+        </section>
+    </main>
+    
+    <footer id="contacto" class="bg-brand-dark text-white">
+        <div class="container mx-auto py-16 px-6 text-center">
+            <h2 class="text-4xl font-bold" data-translate="contact-title">¿Listo para crear un evento inolvidable?</h2>
+            <p class="mt-4 text-lg text-gray-300" data-translate="contact-subtitle">Contáctanos hoy mismo y llevemos la magia del helado de paila a tu celebración.</p>
+            <div class="mt-8">
+                <a href="https://www.instagram.com/dpailahelados" target="_blank" class="bg-brand-red text-white font-bold py-4 px-10 rounded-full text-xl hover:bg-opacity-90 transition-transform transform hover:scale-105 shadow-lg inline-block" data-translate="contact-btn">
+                    Contáctanos en Instagram
+                </a>
+            </div>
+            <p class="mt-12 text-gray-400" data-translate="footer-text">&copy; 2025 D'Paila Helados. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const translations = {
+        'es': {
+            'flag': '🇪🇸',
+            'label': 'Español',
+            'experience-nav': 'La Experiencia',
+            'events-nav': 'Eventos',
+            'impact-nav': 'Nuestro Impacto',
+            'gallery-nav': 'Galería',
+            'quote-btn': 'Cotizar Evento',
+            'hero-title': 'Tradición y Sabor<br>en una <span class="text-brand-gold">Experiencia Inolvidable</span>',
+            'hero-subtitle': 'Transformamos tu celebración con el auténtico helado de paila ecuatoriano, preparado en vivo con un toque de elegancia y distinción.',
+            'agenda-btn': 'Agenda Tu Experiencia',
+            'experience-title': 'Nuestra Experiencia Única',
+            'experience-subtitle': 'Fusionamos la rica cultura de Ecuador con un servicio de élite. Cada detalle está pensado para crear un momento memorable en tu evento.',
+            'show-card-title': 'Show en Vivo',
+            'show-card-text': 'Elaboramos el helado de paila frente a tus invitados, un espectáculo artesanal que deleita todos los sentidos.',
+            'cultural-card-title': 'Símbolos Culturales',
+            'cultural-card-text': 'Integramos elementos icónicos como sombreros de paja toquilla y muñecas otavaleñas para una inmersión cultural.',
+            'elegance-card-title': 'Toque de Elegancia',
+            'elegance-card-text': 'Nuestro equipo viste impecables camisas blancas y guantes negros, garantizando un servicio pulcro y sofisticado.',
+            'premium-card-title': 'Calidad Premium',
+            'premium-card-text': 'Utilizamos solo ingredientes frescos y de la más alta calidad para un sabor que evoca la verdadera tradición ecuatoriana.',
+            'events-title': 'Perfecto Para Tus Eventos',
+            'events-subtitle': 'Añade un factor sorpresa y un sabor inigualable a cualquier tipo de celebración.',
+            'weddings-card-title': 'Bodas y Aniversarios',
+            'weddings-card-text': 'Un detalle dulce y sofisticado que tus invitados recordarán para siempre.',
+            'corporate-card-title': 'Eventos Corporativos',
+            'corporate-card-text': 'Sorprende a clientes y colaboradores con una experiencia interactiva y deliciosa.',
+            'private-card-title': 'Fiestas Privadas',
+            'private-card-text': 'Desde cumpleaños hasta reuniones al aire libre, llevamos la fiesta a otro nivel.',
+            'impact-title': 'Nuestro Impacto en Cifras',
+            'impact-subtitle': 'Creamos momentos felices y memorables. Los datos hablan por sí solos sobre la preferencia de nuestros clientes.',
+            '500+-title': 'Eventos Realizados',
+            '500+-text': 'Llevando sonrisas y sabor a lo largo de Ecuador.',
+            '98%-title': 'Satisfacción',
+            '98%-text': 'Nuestros clientes nos recomiendan por nuestro sabor y servicio.',
+            '20+-title': 'Sabores Únicos',
+            '20+-text': 'Desde frutas tradicionales hasta creaciones exclusivas para tu evento.',
+            '100%-title': 'Artesanal',
+            '100%-text': 'Cada helado es una obra de arte, hecho con pasión y tradición.',
+            'gallery-title': 'Galería de Momentos D\'Paila',
+            'gallery-subtitle': 'Así se ven las sonrisas y la magia en nuestros eventos. Incrusta tus publicaciones favoritas de nuestro Instagram.',
+            'gallery-placeholder': 'Pega aquí el código para incrustar de Instagram...',
+            'add-post-btn': 'Añadir a la Galería',
+            'ideas-title': '¿Necesitas Inspiración? ✨',
+            'ideas-subtitle': 'Describe tu evento y nuestra IA te dará una idea temática creativa para integrar la experiencia D\'Paila Helados.',
+            'ideas-placeholder': 'Ej: Boda campestre, Aniversario 50 años, Fiesta de verano...',
+            'generate-btn': 'Generar Idea Creativa',
+            'idea-result-title': 'Una Idea Para Ti:',
+            'error-message': 'Lo sentimos, no se pudo generar una idea en este momento. Inténtalo de nuevo.',
+            'contact-title': '¿Listo para crear un evento inolvidable?',
+            'contact-subtitle': 'Contáctanos hoy mismo y llevemos la magia del helado de paila a tu celebración.',
+            'contact-btn': 'Contáctanos en Instagram',
+            'footer-text': '&copy; 2025 D\'Paila Helados. Todos los derechos reservados.'
+        },
+        'en': {
+            'flag': '🇺🇸',
+            'label': 'English',
+            'experience-nav': 'The Experience',
+            'events-nav': 'Events',
+            'impact-nav': 'Our Impact',
+            'gallery-nav': 'Gallery',
+            'quote-btn': 'Get a Quote',
+            'hero-title': 'Tradition and Flavor<br>in an <span class="text-brand-gold">Unforgettable Experience</span>',
+            'hero-subtitle': 'We transform your celebration with authentic Ecuadorian paila ice cream, prepared live with a touch of elegance and distinction.',
+            'agenda-btn': 'Book Your Experience',
+            'experience-title': 'Our Unique Experience',
+            'experience-subtitle': 'We merge the rich culture of Ecuador with an elite service. Every detail is designed to create a memorable moment at your event.',
+            'show-card-title': 'Live Show',
+            'show-card-text': 'We prepare the paila ice cream in front of your guests, an artisanal spectacle that delights all the senses.',
+            'cultural-card-title': 'Cultural Symbols',
+            'cultural-card-text': 'We integrate iconic elements like toquilla straw hats and Otavaleña dolls for a cultural immersion.',
+            'elegance-card-title': 'Touch of Elegance',
+            'elegance-card-text': 'Our team wears impeccable white shirts and black gloves, ensuring a neat and sophisticated service.',
+            'premium-card-title': 'Premium Quality',
+            'premium-card-text': 'We use only fresh, high-quality ingredients for a flavor that evokes the true Ecuadorian tradition.',
+            'events-title': 'Perfect for Your Events',
+            'events-subtitle': 'Add a surprise factor and an unmatched flavor to any type of celebration.',
+            'weddings-card-title': 'Weddings and Anniversaries',
+            'weddings-card-text': 'A sweet and sophisticated detail that your guests will remember forever.',
+            'corporate-card-title': 'Corporate Events',
+            'corporate-card-text': 'Surprise clients and collaborators with an interactive and delicious experience.',
+            'private-card-title': 'Private Parties',
+            'private-card-text': 'From birthdays to outdoor gatherings, we take the party to another level.',
+            'impact-title': 'Our Impact in Numbers',
+            'impact-subtitle': 'We create happy and memorable moments. The data speaks for itself about our customers\' preference.',
+            '500+-title': 'Events Completed',
+            '500+-text': 'Bringing smiles and flavor throughout Ecuador.',
+            '98%-title': 'Satisfaction',
+            '98%-text': 'Our clients recommend us for our flavor and service.',
+            '20+-title': 'Unique Flavors',
+            '20+-text': 'From traditional fruits to exclusive creations for your event.',
+            '100%-title': 'Handcrafted',
+            '100%-text': 'Each ice cream is a work of art, made with passion and tradition.',
+            'gallery-title': 'D\'Paila Moments Gallery',
+            'gallery-subtitle': 'This is what smiles and magic look like at our events. Embed your favorite posts from our Instagram.',
+            'gallery-placeholder': 'Paste Instagram embed code here...',
+            'add-post-btn': 'Add to Gallery',
+            'ideas-title': 'Need Inspiration? ✨',
+            'ideas-subtitle': 'Describe your event and our AI will give you a creative theme idea to integrate the D\'Paila Helados experience.',
+            'ideas-placeholder': 'Ex: Countryside wedding, 50th anniversary, Summer party...',
+            'generate-btn': 'Generate Creative Idea',
+            'idea-result-title': 'An Idea for You:',
+            'error-message': 'Sorry, we couldn\'t generate an idea at this time. Please try again.',
+            'contact-title': 'Ready to create an unforgettable event?',
+            'contact-subtitle': 'Contact us today and let\'s bring the magic of paila ice cream to your celebration.',
+            'contact-btn': 'Contact Us on Instagram',
+            'footer-text': '&copy; 2025 D\'Paila Ice Cream. All rights reserved.'
+        }
+    };
+
+    const dropdownBtn = document.getElementById('language-dropdown-btn');
+    const dropdownOptions = document.getElementById('language-options');
+    const currentLangSpan = document.getElementById('current-lang');
+    const dropdownArrow = document.getElementById('dropdown-arrow');
+
+    function translatePage(lang) {
+        document.documentElement.lang = lang;
+        const elements = document.querySelectorAll('[data-translate]');
+        elements.forEach(el => {
+            const key = el.dataset.translate;
+            if (translations[lang][key]) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = translations[lang][key];
+                } else {
+                    el.innerHTML = translations[lang][key];
+                }
+            }
+        });
+        currentLangSpan.textContent = `${translations[lang]['flag']} ${lang.toUpperCase()}`;
+    }
+
+    dropdownBtn.addEventListener('click', () => {
+        dropdownOptions.classList.toggle('hidden');
+        dropdownArrow.classList.toggle('rotate-180');
+    });
+
+    dropdownOptions.addEventListener('click', (event) => {
+        if (event.target.tagName === 'BUTTON') {
+            const selectedLang = event.target.dataset.lang;
+            translatePage(selectedLang);
+            dropdownOptions.classList.add('hidden');
+            dropdownArrow.classList.remove('rotate-180');
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!dropdownBtn.contains(event.target) && !dropdownOptions.contains(event.target)) {
+            dropdownOptions.classList.add('hidden');
+            dropdownArrow.classList.remove('rotate-180');
+        }
+    });
+
+    const chartData = {
+        labels: ['Bodas y Aniversarios', 'Eventos Corporativos', 'Fiestas Privadas'],
+        datasets: [{
+            label: 'Popularidad de Eventos',
+            data: [50, 30, 20],
+            backgroundColor: [
+                '#D43A2F', // brand-red
+                '#2C2C2C', // brand-dark
+                '#FFC107', // brand-gold
+            ],
+            borderColor: '#F9F9F9',
+            borderWidth: 4,
+            hoverOffset: 10
+        }]
+    };
+
+    const chartConfig = {
+        type: 'doughnut',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#2C2C2C',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#2C2C2C',
+                    titleColor: '#FFFFFF',
+                    bodyColor: '#FFFFFF',
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}%`;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const eventsChartCtx = document.getElementById('eventsChart')?.getContext('2d');
+    if (eventsChartCtx) {
+        new Chart(eventsChartCtx, chartConfig);
+    }
+
+    const generateIdeaBtn = document.getElementById('generateIdeaBtn');
+    const eventTypeInput = document.getElementById('eventTypeInput');
+    const ideaResultDiv = document.getElementById('ideaResult');
+    const ideaTextP = document.getElementById('ideaText');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const errorResultDiv = document.getElementById('errorResult');
+
+    generateIdeaBtn.addEventListener('click', async () => {
+        const eventType = eventTypeInput.value.trim();
+        const currentLang = document.documentElement.lang;
+        if (!eventType) {
+            errorResultDiv.textContent = translations[currentLang]['error-message'].replace('Inténtalo de nuevo.', 'Por favor, describe tu evento para generar una idea.');
+            errorResultDiv.classList.remove('hidden');
+            return;
+        }
+
+        loadingIndicator.classList.remove('hidden');
+        ideaResultDiv.classList.add('hidden');
+        errorResultDiv.classList.add('hidden');
+
+        try {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const systemPrompt = "Actúa como un planificador de eventos de élite para 'D'Paila Helados' de Ecuador. Genera un nombre de tema creativo y una descripción de una línea para un evento. El tono debe ser elegante y memorable. Responde solo con el nombre del tema y la descripción.";
+            const userQuery = `Evento: ${eventType}.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`Error de la API: ${response.statusText}`);
+
+            const result = await response.json();
+            const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (generatedText) {
+                ideaTextP.innerHTML = generatedText.replace(/\n/g, '<br>');
+                ideaResultDiv.classList.remove('hidden');
+            } else {
+                throw new Error("La respuesta de la API no contiene texto.");
+            }
+        } catch (error) {
+            console.error('Error con la API de Gemini:', error);
+            errorResultDiv.textContent = translations[currentLang]['error-message'];
+            errorResultDiv.classList.remove('hidden');
+        } finally {
+            loadingIndicator.classList.add('hidden');
+        }
+    });
+
+    const addPostBtn = document.getElementById('addPostBtn');
+    const instagramEmbedCode = document.getElementById('instagramEmbedCode');
+    const instagramFeed = document.getElementById('instagramFeed');
+
+    addPostBtn.addEventListener('click', () => {
+        const embedCodeValue = instagramEmbedCode.value.trim();
+        if (embedCodeValue) {
+            const postContainer = document.createElement('div');
+            postContainer.innerHTML = embedCodeValue;
+            instagramFeed.prepend(postContainer);
+            instagramEmbedCode.value = '';
+            
+            setTimeout(() => {
+                if (window.instgrm) {
+                    window.instgrm.Embeds.process();
+                }
+            }, 500);
+        }
+    });
+});
+</script>
+</body>
+</html>
